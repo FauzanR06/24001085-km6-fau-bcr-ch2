@@ -15,25 +15,23 @@ class App {
 
   run = () => {
     this.clear();
-    // const data = this.searchCar();
+    const data = this.searchCar();
 
-    Car.list.forEach((car) => {
+    if (data.length == 0 || data == undefined) {
       const node = document.createElement("div");
-      node.innerHTML = car.render();
+      node.innerHTML = `
+        <div class="alert alert-danger mt-2" role="alert">
+          Data Tidak Ditemukan
+        </div>
+      `;
       this.carContainerElement.appendChild(node);
-    });
-    // if (data.length == 0 || data == undefined) {
-    //   const node = document.createElement("div");
-    //   node.innerHTML = `<div class="alert alert-danger mt-2" role="alert">Data Tidak Ditemukan
-    // </div>`;
-    //   this.carContainerElement.appendChild(node);
-    // } else {
-    //   data.forEach((car) => {
-    //     const node = document.createElement("div");
-    //     node.innerHTML = car.render();
-    //     this.carContainerElement.appendChild(node);
-    //   });
-    // }
+    } else {
+      data.forEach((car) => {
+        const node = document.createElement("div");
+        node.innerHTML = car.render();
+        this.carContainerElement.appendChild(node);
+      });
+    }
   };
 
   // Search Cars
@@ -41,12 +39,17 @@ class App {
     const driver = document.getElementById("driver").value;
     const date = document.getElementById("date").value;
     const time = document.getElementById("time").value;
-    const dateTime = new Date(`${date} ${time}`);
     const passenger = document.getElementById("passenger").value;
+    const [year, month, day] = date.split("-");
+    const [hours, minutes] = time.split(".");
+
+    const dateTime = new Date(year, month - 1, day, hours, minutes);
+
+    console.log("DateTime:", dateTime);
 
     if (driver === undefined || driver === "") {
       alert("Please select a driver");
-      return;
+      return "";
     } else if (passenger == "" && driver.toString() == "true") {
       return Car.list.filter(
         (car) => car.available === true && car.availableAt <= dateTime
